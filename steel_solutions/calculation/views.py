@@ -36,16 +36,12 @@ def spec(request, product_id):
     pogonage_spec = PogonageSpec.objects.filter(spec_id=spec_id)
     result_lst = []
     for item_sheet in sheet_spec:
-        result = {}
-        result['unit_name'] = SheetUnit.objects.get(id=item_sheet.unit_type_id).unit_name
-        result['width'] = item_sheet.width_sheet
-        result['height'] = item_sheet.height_sheet
-        result['amount'] = item_sheet.amount
-        result_lst.append(result)
+        result_lst.append({'unit_name': SheetUnit.objects.get(id=item_sheet.unit_type_id).unit_name,
+                           'width': item_sheet.width_sheet,
+                           'height': item_sheet.height_sheet,
+                           'amount': item_sheet.amount})
     for item_pogon in pogonage_spec:
-        result = {}
-        result['unit_name'] = PogonageUnit.objects.get(id=item_pogon.unit_type_id).unit_name
-        result['length'] = item_pogon.detail_length
-        result['amount'] = item_pogon.amount
-        result_lst.append(result)
+        result_lst.append({'unit_name': PogonageUnit.objects.get(id=item_pogon.unit_type_id).unit_name,
+                           'length': item_pogon.detail_length,
+                           'amount': item_pogon.amount})
     return render(request, "calculation/spec.html", context={'spec': result_lst})
