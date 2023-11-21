@@ -3,6 +3,9 @@ from django.db import models
 
 class Product(models.Model):
     id = models.AutoField(primary_key=True)
+    name = models.CharField(max_length=40)
+    description = models.CharField(max_length=500, default='tst')
+    price = models.IntegerField(default=0)
 
 
 class Photo(models.Model):
@@ -21,6 +24,7 @@ class PogonageUnit(models.Model):
     unit_length = models.IntegerField()
     unit_weight = models.DecimalField(max_digits=5, decimal_places=1)
     unit_cost = models.DecimalField(max_digits=5, decimal_places=1)
+    objects = models.Manager()
 
 
 class SheetUnit(models.Model):
@@ -30,20 +34,26 @@ class SheetUnit(models.Model):
     unit_height = models.IntegerField()
     unit_weight = models.DecimalField(max_digits=5, decimal_places=1)
     unit_cost = models.DecimalField(max_digits=5, decimal_places=1)
-
-
-class Sortament(models.Model):
-    length_pogon = models.IntegerField()
-    width_sheet = models.IntegerField()
-    height_sheet = models.IntegerField()
-    count = models.IntegerField()
-
-
-class SortamentType(models.Model):
-    sortament = models.ManyToManyField(Sortament)
-    unit_pogonage = models.ManyToManyField(PogonageUnit)
-    unit_sheet = models.ManyToManyField(SheetUnit)
+    objects = models.Manager()
 
 
 class Specification(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    objects = models.Manager()
+
+
+class SheetSpec(models.Model):
+    spec = models.ForeignKey(Specification, on_delete=models.CASCADE)
+    unit_type = models.ForeignKey(SheetUnit, on_delete=models.CASCADE)
+    width_sheet = models.IntegerField()
+    height_sheet = models.IntegerField()
+    amount = models.IntegerField()
+    objects = models.Manager()
+
+
+class PogonageSpec(models.Model):
+    spec = models.ForeignKey(Specification, on_delete=models.CASCADE)
+    unit_type = models.ForeignKey(PogonageUnit, on_delete=models.CASCADE)
+    detail_length = models.IntegerField()
+    amount = models.IntegerField()
+    objects = models.Manager()

@@ -1,0 +1,16 @@
+{% extends 'calculation/base.html' %}
+{% block content %}
+<div class="container-fluid text-start my-2 border">
+<form method="post">
+{% csrf_token %}
+  {% for field in form %}
+  <div class="mb-3">
+   {{ field.label_tag }}
+   {{ field }}
+  </div>
+  {% endfor %}
+  <button type="submit" class="btn btn-primary">Сохранить</button>
+</form>
+</div>
+{% endblock %}
+

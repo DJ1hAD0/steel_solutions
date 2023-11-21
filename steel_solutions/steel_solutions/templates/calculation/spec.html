@@ -1,0 +1,25 @@
+{% extends 'calculation/base.html' %}
+{% block content %}
+<table class="table table-light">
+    <thead>
+    <tr>
+      <th scope="col">Сортамент</th>
+      <th scope="col">Ширина</th>
+      <th scope="col">Длина</th>
+      <th scope="col">Погонаж</th>
+      <th scope="col">Количество</th>
+    </tr>
+  </thead>
+    {% for item in spec %}
+    <tr>
+        <td>{{ item.unit_name }}</td>
+        <td>{{ item.width }}</td>
+        <td>{{ item.height }}</td>
+        <td>{{ item.length }}</td>
+        <td>{{ item.amount }}</td>
+    </tr>
+    {% endfor %}
+</table>
+
+{% endblock %}
+
