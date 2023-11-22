@@ -1,5 +1,5 @@
 from django import forms
-from .models import PogonageUnit, SheetUnit
+from .models import PogonageUnit, SheetUnit, SheetSpec, PogonageSpec
 
 
 class Pogonage(forms.ModelForm):
@@ -27,3 +27,36 @@ class Sheet(forms.ModelForm):
             'unit_weight': 'Вес листа, кг.',
             'unit_cost': 'Стоимость листа, руб.'
         }
+
+
+"""
+class SheetSpec(models.Model):
+    spec = models.ForeignKey(Specification, on_delete=models.CASCADE)
+    unit_type = models.ForeignKey(SheetUnit, on_delete=models.CASCADE)
+    width_sheet = models.IntegerField()
+    height_sheet = models.IntegerField()
+    amount = models.IntegerField()
+    objects = models.Manager()
+
+
+class PogonageSpec(models.Model):
+    spec = models.ForeignKey(Specification, on_delete=models.CASCADE)
+    unit_type = models.ForeignKey(PogonageUnit, on_delete=models.CASCADE)
+    detail_length = models.IntegerField()
+    amount = models.IntegerField()
+    objects = models.Manager()
+"""
+
+
+class SheetSpecForm(forms.ModelForm):
+    class Meta:
+        model = SheetSpec
+        fields = '__all__'
+        exclude = ['spec']
+
+
+class PogonSpecForm(forms.ModelForm):
+    class Meta:
+        model = PogonageSpec
+        fields = '__all__'
+        exclude = ['spec']

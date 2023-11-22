@@ -26,6 +26,9 @@ class PogonageUnit(models.Model):
     unit_cost = models.DecimalField(max_digits=5, decimal_places=1)
     objects = models.Manager()
 
+    def __str__(self):
+        return self.unit_name
+
 
 class SheetUnit(models.Model):
     unit_name = models.CharField(max_length=40)
@@ -35,6 +38,9 @@ class SheetUnit(models.Model):
     unit_weight = models.DecimalField(max_digits=5, decimal_places=1)
     unit_cost = models.DecimalField(max_digits=5, decimal_places=1)
     objects = models.Manager()
+
+    def __str__(self):
+        return self.unit_name
 
 
 class Specification(models.Model):

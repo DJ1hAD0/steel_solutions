@@ -41,7 +41,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django_bootstrap5',
     'calculation',
-    'widget_tweaks'
+
 ]
 
 MIDDLEWARE = [

@@ -6,5 +6,6 @@ urlpatterns = [
     path('pogonage_unit', views.pogonage_sortament, name='pogonage'),
     path('sheet_unit', views.sheet_sortament, name='sheet'),
     path('spec/<product_id>/', views.spec, name='spec'),
+    path('delete_spec_entry', views.delete_spec_entry, name='delete_spec_entry'),
     path('index', views.index, name='index')
 ]
