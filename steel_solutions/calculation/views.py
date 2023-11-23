@@ -2,7 +2,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponseRedirect
 from pyexpat.errors import messages
-
+from django.db import models
 from .forms import Pogonage, Sheet, SheetSpecForm, PogonSpecForm
 from .models import Specification, Product, SheetSpec, PogonageSpec, SheetUnit, PogonageUnit
 
@@ -71,22 +71,32 @@ def spec(request, product_id):
             'width_sheet': item_sheet.width_sheet,
             'height_sheet': item_sheet.height_sheet,
             'amount': item_sheet.amount})
-        result_sheet.append({'id': item_sheet.id, 'form': form_sheet_metall, 'type': 'sheet'})
+        result_sheet.append({'id': item_sheet.id, 'form': form_sheet_metall, 'type': 'sheet', 'spec_id': spec_id})
     for item_pogon in pogonage_spec:
         form_pogon_metall = PogonSpecForm(initial={
             'unit_type': PogonageUnit.objects.get(id=item_pogon.unit_type_id).pk,
             'detail_length': item_pogon.detail_length,
             'amount': item_pogon.amount})
-        result_pogon.append({'id': item_pogon.id, 'form': form_pogon_metall, 'type': 'pogon'})
+        result_pogon.append({'id': item_pogon.id, 'form': form_pogon_metall, 'type': 'pogon', 'spec_id': spec_id})
     return render(request, "calculation/spec.html", context={'spec_sheet': result_sheet, 'spec_pogon': result_pogon})
 
 
 def delete_spec_entry(request):
     if request.method == "POST":
         if request.POST['item_type'] == 'sheet':
-            print(SheetSpec.objects.filter(id=request.POST['item_id']))
-            SheetSpec.objects.filter(id=request.POST['item_id']).delete()
+            SheetSpec.objects.get(id=request.POST['item_id']).delete()
         elif request.POST['item_type'] == 'pogon':
-            PogonageSpec.objects.filter(id=request.POST['item_id']).delete()
+            PogonageSpec.objects.get(id=request.POST['item_id']).delete()
+    return HttpResponseRedirect(request.META.get('HTTP_REFERER', '<default_url>'))
 
+
+def create_spec_entry(request):
+    if request.method == "POST":
+        spec = Specification.objects.get(id=request.POST['spec'])
+        if request.POST['item_type'] == 'sheet':
+            SheetSpec.objects.create(spec=spec, unit_type=SheetUnit.objects.first(), width=0, height=0,
+                                     amount=0)
+        elif request.POST['item_type'] == 'pogon':
+            PogonageSpec.objects.create(spec=spec, unit_type=PogonageUnit.objects.first(), detail_length=0,
+                                        amount=0)
     return HttpResponseRedirect(request.META.get('HTTP_REFERER', '<default_url>'))

@@ -9,8 +9,10 @@
             {{ item.form}}
             <input type="hidden" name="id" value="{{ item.id }}">
             <input type="hidden" name="type" value="{{ item.type }}">
+            <input type="hidden" name="spec_id" value="{{ item.spec_id }}">
             <button type="submit" class="btn btn-primary"><i class="fa fa-save"></i></button>
             <button type="button" class="delete btn btn-primary"><i class="fa fa-trash-o fa-fw"></i>
+                <button type="button" class="create btn btn-primary"><i class="fa fa-plus" aria-hidden="true"></i></button>
             </button>
         </div>
         <script>
@@ -31,9 +33,24 @@
             }
         });
         });
-
-
-        </script>
+         $('.create').click(function(){
+        // Отправляем AJAX-запрос на сервер
+        $.ajax({
+            url: '{% url 'create_spec_entry' %}',  // Замените 'your-url-name' на имя вашего URL-шаблона
+            type: 'POST',
+            data: {
+                spec: '{{ item.spec_id }}',
+                item_type: '{{ item.type }}',
+                csrfmiddlewaretoken: '{{ csrf_token }}',
+            },
+            success: function(data){
+            location.reload();
+                // Обработка успешного ответа от сервера
+                console.log('Успешное сохранение');
+            }
+        });
+        });
+       </script>
     </form>
     {% endfor %}
     {% for item in spec_pogon %}
@@ -43,8 +60,11 @@
             {{ item.form }}
             <input type="hidden" name="id" value="{{ item.id }}">
             <input type="hidden" name="type" value="{{ item.type }}">
+            <input type="hidden" name="spec_id" value="{{ item.spec_id }}">
+
             <button type="submit" class="btn btn-primary"><i class="fa fa-save"></i></button>
             <button type="button" class="delete-p btn btn-primary"><i class="fa fa-trash-o fa-fw"></i></button>
+            <button type="button" class="create btn btn-primary"><i class="fa fa-plus" aria-hidden="true"></i></button>
         </div>
         <script>
     $('.delete-p').click(function(){
@@ -64,14 +84,27 @@
             }
         });
         });
-
-
+              $('.create').click(function(){
+        // Отправляем AJAX-запрос на сервер
+        $.ajax({
+            url: '{% url 'create_spec_entry' %}',  // Замените 'your-url-name' на имя вашего URL-шаблона
+            type: 'POST',
+            data: {
+                spec: '{{ item.spec_id }}',
+                item_type: '{{ item.type }}',
+                csrfmiddlewaretoken: '{{ csrf_token }}',
+            },
+            success: function(data){
+            location.reload();
+                // Обработка успешного ответа от сервера
+                console.log('Успешное сохранение');
+            }
+        });
+        });
         </script>
+
     </form>
     {% endfor %}
-
-</div>
-
 
 {% endblock %}
 
