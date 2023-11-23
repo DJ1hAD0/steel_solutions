@@ -92,11 +92,11 @@ def delete_spec_entry(request):
 
 def create_spec_entry(request):
     if request.method == "POST":
-        spec = Specification.objects.get(id=request.POST['spec'])
+        current_spec = Specification.objects.get(id=request.POST['spec'])
         if request.POST['item_type'] == 'sheet':
-            SheetSpec.objects.create(spec=spec, unit_type=SheetUnit.objects.first(), width=0, height=0,
+            SheetSpec.objects.create(spec=current_spec, unit_type=SheetUnit.objects.first(), width=0, height=0,
                                      amount=0)
         elif request.POST['item_type'] == 'pogon':
-            PogonageSpec.objects.create(spec=spec, unit_type=PogonageUnit.objects.first(), detail_length=0,
+            PogonageSpec.objects.create(spec=current_spec, unit_type=PogonageUnit.objects.first(), detail_length=0,
                                         amount=0)
     return HttpResponseRedirect(request.META.get('HTTP_REFERER', '<default_url>'))
