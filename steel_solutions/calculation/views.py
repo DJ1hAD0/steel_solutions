@@ -83,10 +83,10 @@ def spec(request, product_id):
 
 def delete_spec_entry(request):
     if request.method == "POST":
-        print(request.POST)
-        if request.POST.get('type') == 'sheet':
+        if request.POST['item_type'] == 'sheet':
+            print(SheetSpec.objects.filter(id=request.POST['item_id']))
             SheetSpec.objects.filter(id=request.POST['item_id']).delete()
-        elif request.POST.get('type') == 'pogon':
+        elif request.POST['item_type'] == 'pogon':
             PogonageSpec.objects.filter(id=request.POST['item_id']).delete()
 
     return HttpResponseRedirect(request.META.get('HTTP_REFERER', '<default_url>'))
