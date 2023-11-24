@@ -110,5 +110,5 @@ def update_unit_entry(request):
         instance.unit_length = request.POST['unit_length']
         instance.unit_weight = request.POST['unit_weight']
         instance.unit_cost = request.POST['unit_cost']
-        form.save()
+        instance.save()
     return HttpResponseRedirect(request.META.get('HTTP_REFERER', '<default_url>'))
