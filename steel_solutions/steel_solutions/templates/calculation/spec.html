@@ -3,19 +3,31 @@
 
 <div class="container-fluid text-start my-2 border">
     {% for item in spec_sheet %}
-    <form method="post" action="">
+    <form method="post" action="{% url 'save_spec_entry' %}" id="form-{{ item.id }}">
         <div class="mb-3">
             {% csrf_token %}
             {{ item.form}}
             <input type="hidden" name="id" value="{{ item.id }}">
             <input type="hidden" name="type" value="{{ item.type }}">
             <input type="hidden" name="spec_id" value="{{ item.spec_id }}">
-            <button type="submit" class="btn btn-primary"><i class="fa fa-save"></i></button>
+            <button type="submit" id="save-{{ item.id }}" class="btn btn-primary"><i class="fa fa-save"></i></button>
             <button type="button" id="delete-{{ item.id }}" class="btn btn-primary"><i class="fa fa-trash-o fa-fw"></i>
-                <button type="button" id="#create-{{ item.id }}" class="btn btn-primary"><i class="fa fa-plus" aria-hidden="true"></i></button>
-            </button>
+               </button>
+            <button type="button" id="create-{{ item.id }}" class="btn btn-primary"><i class="fa fa-plus"
+                                                                                           aria-hidden="true"></i>
+                </button>
+
         </div>
         <script>
+
+        $('#form-{{ item.id }}').on('submit',function(event){
+            event.preventDefault();
+            let data = $(this).serializeArray();
+
+         $.post($(this).attr('action'),data);
+        });
+
+
     $('#delete-{{ item.id }}').click(function(){
         // Отправляем AJAX-запрос на сервер
         $.ajax({
@@ -50,11 +62,12 @@
             }
         });
         });
-       </script>
+
+        </script>
     </form>
     {% endfor %}
     {% for item in spec_pogon %}
-    <form method="post">
+     <form method="post" action="{% url 'save_spec_entry' %}" id="form-{{ item.id }}">
         {% csrf_token %}
         <div class="mb-3">
             {{ item.form }}
@@ -62,12 +75,20 @@
             <input type="hidden" name="type" value="{{ item.type }}">
             <input type="hidden" name="spec_id" value="{{ item.spec_id }}">
 
-            <button type="submit" class="btn btn-primary"><i class="fa fa-save"></i></button>
-            <button type="button" id="delete-p-{{ item.id }}" class="btn btn-primary"><i class="fa fa-trash-o fa-fw"></i></button>
-            <button type="button" id="create-{{ item.id }}" class="btn btn-primary"><i class="fa fa-plus" aria-hidden="true"></i></button>
+            <button type="submit" id="save-p{{ item.id }}" class="btn btn-primary"><i class="fa fa-save"></i></button>
+            <button type="button" id="delete-p{{ item.id }}" class="btn btn-primary"><i class="fa fa-trash-o fa-fw"></i>
+            </button>
+            <button type="button" id="create-p{{ item.id }}" class="btn btn-primary"><i class="fa fa-plus"
+                                                                                        aria-hidden="true"></i></button>
         </div>
         <script>
-    $('#delete-p-{{ item.id }}').click(function(){
+        $('#form-{{ item.id }}').on('submit',function(event){
+            event.preventDefault();
+            let data = $(this).serializeArray();
+
+         $.post($(this).attr('action'),data);
+        });
+    $('#delete-p{{ item.id }}').click(function(){
         // Отправляем AJAX-запрос на сервер
         $.ajax({
             url: '{% url 'delete_spec_entry' %}',  // Замените 'your-url-name' на имя вашего URL-шаблона
@@ -84,7 +105,7 @@
             }
         });
         });
-              $('#create-{{ item.id }}').click(function(){
+        $('#create-p{{ item.id }}').click(function(){
         // Отправляем AJAX-запрос на сервер
         $.ajax({
             url: '{% url 'create_spec_entry' %}',  // Замените 'your-url-name' на имя вашего URL-шаблона
@@ -101,10 +122,12 @@
             }
         });
         });
+
+
         </script>
 
     </form>
     {% endfor %}
 
-{% endblock %}
+    {% endblock %}
 
