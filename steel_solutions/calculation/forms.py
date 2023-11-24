@@ -29,25 +29,6 @@ class Sheet(forms.ModelForm):
         }
 
 
-"""
-class SheetSpec(models.Model):
-    spec = models.ForeignKey(Specification, on_delete=models.CASCADE)
-    unit_type = models.ForeignKey(SheetUnit, on_delete=models.CASCADE)
-    width_sheet = models.IntegerField()
-    height_sheet = models.IntegerField()
-    amount = models.IntegerField()
-    objects = models.Manager()
-
-
-class PogonageSpec(models.Model):
-    spec = models.ForeignKey(Specification, on_delete=models.CASCADE)
-    unit_type = models.ForeignKey(PogonageUnit, on_delete=models.CASCADE)
-    detail_length = models.IntegerField()
-    amount = models.IntegerField()
-    objects = models.Manager()
-"""
-
-
 class SheetSpecForm(forms.ModelForm):
     class Meta:
         model = SheetSpec
@@ -60,3 +41,4 @@ class PogonSpecForm(forms.ModelForm):
         model = PogonageSpec
         fields = '__all__'
         exclude = ['spec']
+

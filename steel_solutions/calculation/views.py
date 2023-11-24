@@ -45,14 +45,15 @@ def spec(request, product_id):
             'width_sheet': item_sheet.width_sheet,
             'height_sheet': item_sheet.height_sheet,
             'amount': item_sheet.amount})
-        result_sheet.append({'id': item_sheet.id, 'form': form_sheet_metall, 'type': 'sheet', 'spec_id': spec_id})
+        result_sheet.append({'id': item_sheet.id, 'form': form_sheet_metall, 'type': 'sheet'})
     for item_pogon in pogonage_spec:
         form_pogon_metall = PogonSpecForm(initial={
             'unit_type': PogonageUnit.objects.get(id=item_pogon.unit_type_id).pk,
             'detail_length': item_pogon.detail_length,
             'amount': item_pogon.amount})
-        result_pogon.append({'id': item_pogon.id, 'form': form_pogon_metall, 'type': 'pogon', 'spec_id': spec_id})
-    return render(request, "calculation/spec.html", context={'spec_sheet': result_sheet, 'spec_pogon': result_pogon})
+        result_pogon.append({'id': item_pogon.id, 'form': form_pogon_metall, 'type': 'pogon'})
+    return render(request, "calculation/spec.html",
+                  context={'spec_sheet': result_sheet, 'spec_pogon': result_pogon, 'spec_id': spec_id})
 
 
 def delete_spec_entry(request):
@@ -68,7 +69,8 @@ def create_spec_entry(request):
     if request.method == "POST":
         current_spec = Specification.objects.get(id=request.POST['spec'])
         if request.POST['item_type'] == 'sheet':
-            SheetSpec.objects.create(spec=current_spec, unit_type=SheetUnit.objects.first(), width_sheet=0, height_sheet=0,
+            SheetSpec.objects.create(spec=current_spec, unit_type=SheetUnit.objects.first(), width_sheet=0,
+                                     height_sheet=0,
                                      amount=0)
         elif request.POST['item_type'] == 'pogon':
             PogonageSpec.objects.create(spec=current_spec, unit_type=PogonageUnit.objects.first(), detail_length=0,
