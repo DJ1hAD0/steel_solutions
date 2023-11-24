@@ -13,12 +13,13 @@ def index(request):
 
 def pogonage_sortament(request):
     if request.method == 'POST':
-        form = Pogonage(request.POST)
-        if form.is_valid():
-            form.save()
-            return redirect('pogonage')
-    form = Pogonage()
-    context = {'form': form}
+        update_unit_entry(request)
+    unit_types = PogonageUnit.objects.all()
+    result = []
+    for unit_type in unit_types:
+        form = Pogonage(initial=unit_type.__dict__)
+        result.append({'id': unit_type.id, 'form': form})
+    context = {'forms': result}
     return render(request, "calculation/pogonage.html", context)
 
 
@@ -78,7 +79,7 @@ def create_spec_entry(request):
     return HttpResponseRedirect(request.META.get('HTTP_REFERER', '<default_url>'))
 
 
-def save_spec_entry(request):
+def update_spec_entry(request):
     if request.method == "POST":
         if request.POST.get('type') == 'sheet':
             form = SheetSpecForm(request.POST)
@@ -97,4 +98,17 @@ def save_spec_entry(request):
                 instance.detail_length = request.POST['detail_length']
                 instance.amount = request.POST['amount']
                 instance.save()
+    return HttpResponseRedirect(request.META.get('HTTP_REFERER', '<default_url>'))
+
+
+def update_unit_entry(request):
+    form = Pogonage(request.POST)
+    if form.is_valid():
+        instance = PogonageUnit.objects.get(id=request.POST.get('id'))
+        instance.unit_name = request.POST['unit_name']
+        instance.metal_thickness = request.POST['metal_thickness']
+        instance.unit_length = request.POST['unit_length']
+        instance.unit_weight = request.POST['unit_weight']
+        instance.unit_cost = request.POST['unit_cost']
+        form.save()
     return HttpResponseRedirect(request.META.get('HTTP_REFERER', '<default_url>'))
