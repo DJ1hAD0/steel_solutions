@@ -12,8 +12,6 @@ def index(request):
 
 
 def pogonage_sortament(request):
-    if request.method == 'POST':
-        update_unit_entry(request)
     unit_types = PogonageUnit.objects.all()
     result = []
     for unit_type in unit_types:
@@ -101,14 +99,28 @@ def update_spec_entry(request):
     return HttpResponseRedirect(request.META.get('HTTP_REFERER', '<default_url>'))
 
 
-def update_unit_entry(request):
-    form = Pogonage(request.POST)
-    if form.is_valid():
-        instance = PogonageUnit.objects.get(id=request.POST.get('id'))
-        instance.unit_name = request.POST['unit_name']
-        instance.metal_thickness = request.POST['metal_thickness']
-        instance.unit_length = request.POST['unit_length']
-        instance.unit_weight = request.POST['unit_weight']
-        instance.unit_cost = request.POST['unit_cost']
-        instance.save()
+def update_pogonage_unit_entry(request):
+    if request.method == "POST":
+        form = Pogonage(request.POST)
+        if form.is_valid():
+            instance = PogonageUnit.objects.get(id=request.POST.get('id'))
+            instance.unit_name = request.POST['unit_name']
+            instance.metal_thickness = request.POST['metal_thickness']
+            instance.unit_length = request.POST['unit_length']
+            instance.unit_weight = request.POST['unit_weight']
+            instance.unit_cost = request.POST['unit_cost']
+            instance.save()
+    return HttpResponseRedirect(request.META.get('HTTP_REFERER', '<default_url>'))
+
+
+def delete_pogonage_unit_entry(request):
+    if request.method == "POST":
+        PogonageUnit.objects.get(id=request.POST['item_id']).delete()
+    return HttpResponseRedirect(request.META.get('HTTP_REFERER', '<default_url>'))
+
+
+def create_pogonage_unit_entry(request):
+    if request.method == "POST":
+        PogonageUnit.objects.create(unit_name='Наименование', metal_thickness=1, unit_length=6000, unit_weight=0,
+                                    unit_cost=0)
     return HttpResponseRedirect(request.META.get('HTTP_REFERER', '<default_url>'))
