@@ -80,36 +80,24 @@ def create_spec_entry(request):
 def update_spec_entry(request):
     if request.method == "POST":
         if request.POST.get('type') == 'sheet':
-            form = SheetSpecForm(request.POST)
+            sheet_spec_instance = get_object_or_404(SheetSpec, pk=request.POST.get('id'))
+            form = SheetSpecForm(request.POST, instance=sheet_spec_instance)
             if form.is_valid():
-                instance = SheetSpec.objects.get(id=request.POST.get('id'))
-                instance.unit_type = SheetUnit.objects.get(id=request.POST['unit_type'])
-                instance.width_sheet = request.POST['width_sheet']
-                instance.height_sheet = request.POST['height_sheet']
-                instance.amount = request.POST['amount']
-                instance.save()
+                form.save()
         elif request.POST.get('type') == 'pogon':
-            form = PogonSpecForm(request.POST)
+            pogon_spec_instance = get_object_or_404(PogonageSpec, pk=request.POST.get('id'))
+            form = PogonSpecForm(request.POST, instance=pogon_spec_instance)
             if form.is_valid():
-                instance = PogonageSpec.objects.get(id=request.POST.get('id'))
-                instance.unit_type = PogonageUnit.objects.get(id=request.POST['unit_type'])
-                instance.detail_length = request.POST['detail_length']
-                instance.amount = request.POST['amount']
-                instance.save()
+                form.save()
     return HttpResponseRedirect(request.META.get('HTTP_REFERER', '<default_url>'))
 
 
 def update_pogonage_unit_entry(request):
     if request.method == "POST":
-        form = Pogonage(request.POST)
+        pogonage_unit_instance = get_object_or_404(PogonageUnit, pk=request.POST.get('id'))
+        form = Pogonage(request.POST, instance=pogonage_unit_instance)
         if form.is_valid():
-            instance = PogonageUnit.objects.get(id=request.POST.get('id'))
-            instance.unit_name = request.POST['unit_name']
-            instance.metal_thickness = request.POST['metal_thickness']
-            instance.unit_length = request.POST['unit_length']
-            instance.unit_weight = request.POST['unit_weight']
-            instance.unit_cost = request.POST['unit_cost']
-            instance.save()
+            form.save()
     return HttpResponseRedirect(request.META.get('HTTP_REFERER', '<default_url>'))
 
 
