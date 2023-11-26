@@ -19,11 +19,11 @@ class File(models.Model):
 
 
 class PogonageUnit(models.Model):
-    unit_name = models.CharField(max_length=40)
-    metal_thickness = models.IntegerField()
-    unit_length = models.IntegerField()
-    unit_weight = models.DecimalField(max_digits=5, decimal_places=1)
-    unit_cost = models.DecimalField(max_digits=5, decimal_places=1)
+    unit_name = models.CharField(max_length=40, default='Наименование')
+    metal_thickness = models.IntegerField(default=0)
+    unit_length = models.IntegerField(default=0)
+    unit_weight = models.DecimalField(max_digits=6, decimal_places=1, default=0)
+    unit_cost = models.DecimalField(max_digits=6, decimal_places=1, default=0)
     objects = models.Manager()
 
     def __str__(self):
@@ -31,12 +31,12 @@ class PogonageUnit(models.Model):
 
 
 class SheetUnit(models.Model):
-    unit_name = models.CharField(max_length=40)
-    metal_thickness = models.IntegerField()
-    unit_width = models.IntegerField()
-    unit_height = models.IntegerField()
-    unit_weight = models.DecimalField(max_digits=5, decimal_places=1)
-    unit_cost = models.DecimalField(max_digits=5, decimal_places=1)
+    unit_name = models.CharField(max_length=40, default='Наименование')
+    metal_thickness = models.IntegerField(default=0)
+    unit_width = models.IntegerField(default=0)
+    unit_height = models.IntegerField(default=0)
+    unit_weight = models.DecimalField(max_digits=5, decimal_places=1, default=0)
+    unit_cost = models.DecimalField(max_digits=5, decimal_places=1, default=0)
     objects = models.Manager()
 
     def __str__(self):
@@ -51,15 +51,15 @@ class Specification(models.Model):
 class SheetSpec(models.Model):
     spec = models.ForeignKey(Specification, on_delete=models.CASCADE)
     unit_type = models.ForeignKey(SheetUnit, on_delete=models.CASCADE)
-    width_sheet = models.IntegerField()
-    height_sheet = models.IntegerField()
-    amount = models.IntegerField()
+    width_sheet = models.IntegerField(default=0)
+    height_sheet = models.IntegerField(default=0)
+    amount = models.IntegerField(default=0)
     objects = models.Manager()
 
 
 class PogonageSpec(models.Model):
     spec = models.ForeignKey(Specification, on_delete=models.CASCADE)
     unit_type = models.ForeignKey(PogonageUnit, on_delete=models.CASCADE)
-    detail_length = models.IntegerField()
-    amount = models.IntegerField()
+    detail_length = models.IntegerField(default=0)
+    amount = models.IntegerField(default=0)
     objects = models.Manager()

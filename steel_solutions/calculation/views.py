@@ -11,25 +11,24 @@ def index(request):
     return render(request, '<h1>Hello</h1>')
 
 
-def pogonage_sortament(request):
-    unit_types = PogonageUnit.objects.all()
+def show_unit_sortament(model, form, type):
+    unit_types = model.objects.all()
     result = []
     for unit_type in unit_types:
-        form = Pogonage(initial=unit_type.__dict__)
-        result.append({'id': unit_type.id, 'form': form})
+        form_data = form(initial=unit_type.__dict__)
+        result.append({'id': unit_type.id, 'form': form_data, 'type': type})
     context = {'forms': result}
+    return context
+
+
+def pogonage_sortament(request):
+    context = show_unit_sortament(model=PogonageUnit, form=Pogonage, type='pogon')
     return render(request, "calculation/pogonage.html", context)
 
 
 def sheet_sortament(request):
-    if request.method == 'POST':
-        form = Sheet(request.POST)
-        if form.is_valid():
-            form.save()
-            return redirect('sheet')
-    form = Sheet()
-    context = {'form': form}
-    return render(request, "calculation/sheet.html", context)
+    context = show_unit_sortament(model=SheetUnit, form=Sheet, type='sheet')
+    return render(request, "calculation/pogonage.html", context)
 
 
 def spec(request, product_id):
@@ -55,60 +54,70 @@ def spec(request, product_id):
                   context={'spec_sheet': result_sheet, 'spec_pogon': result_pogon, 'spec_id': spec_id})
 
 
+def crud_unit_mapper(unit_type):
+    models_mapping = {'pogon': PogonageUnit,
+                      'sheet': SheetUnit}
+    forms_mapping = {'pogon': Pogonage,
+                     'sheet': Sheet}
+    return models_mapping.get(unit_type), forms_mapping.get(unit_type)
+
+
+def crud_spec_mapper(spec_type):
+    models_mapping = {'pogon': PogonageSpec,
+                      'sheet': SheetSpec}
+    forms_mapping = {'pogon': PogonSpecForm,
+                     'sheet': SheetSpecForm}
+    return models_mapping.get(spec_type), forms_mapping.get(spec_type)
+
+
 def delete_spec_entry(request):
     if request.method == "POST":
-        if request.POST['item_type'] == 'sheet':
-            SheetSpec.objects.get(id=request.POST['item_id']).delete()
-        elif request.POST['item_type'] == 'pogon':
-            PogonageSpec.objects.get(id=request.POST['item_id']).delete()
+        model, _ = crud_spec_mapper(spec_type=request.POST.get('item_type'))
+        model.objects.get(id=request.POST['item_id']).delete()
     return HttpResponseRedirect(request.META.get('HTTP_REFERER', '<default_url>'))
 
 
 def create_spec_entry(request):
     if request.method == "POST":
-        current_spec = Specification.objects.get(id=request.POST['spec'])
-        if request.POST['item_type'] == 'sheet':
-            SheetSpec.objects.create(spec=current_spec, unit_type=SheetUnit.objects.first(), width_sheet=0,
-                                     height_sheet=0,
-                                     amount=0)
-        elif request.POST['item_type'] == 'pogon':
-            PogonageSpec.objects.create(spec=current_spec, unit_type=PogonageUnit.objects.first(), detail_length=0,
-                                        amount=0)
+        metal_type = request.POST.get('item_type')
+        unit_model, _ = crud_unit_mapper(unit_type=metal_type)
+        model, _ = crud_spec_mapper(spec_type=metal_type)
+        model.objects.create(spec=Specification.objects.get(id=request.POST['spec']),
+                             unit_type=unit_model.objects.first())
     return HttpResponseRedirect(request.META.get('HTTP_REFERER', '<default_url>'))
 
 
 def update_spec_entry(request):
     if request.method == "POST":
-        if request.POST.get('type') == 'sheet':
-            sheet_spec_instance = get_object_or_404(SheetSpec, pk=request.POST.get('id'))
-            form = SheetSpecForm(request.POST, instance=sheet_spec_instance)
-            if form.is_valid():
-                form.save()
-        elif request.POST.get('type') == 'pogon':
-            pogon_spec_instance = get_object_or_404(PogonageSpec, pk=request.POST.get('id'))
-            form = PogonSpecForm(request.POST, instance=pogon_spec_instance)
-            if form.is_valid():
-                form.save()
+        metal_type = request.POST.get('type')
+        unit_model, _ = crud_unit_mapper(unit_type=metal_type)
+        model, form = crud_spec_mapper(spec_type=metal_type)
+        spec_instance = get_object_or_404(model, pk=request.POST.get('id'))
+        form_data = form(request.POST, instance=spec_instance)
+        if form_data.is_valid():
+            form_data.save()
     return HttpResponseRedirect(request.META.get('HTTP_REFERER', '<default_url>'))
 
 
-def update_pogonage_unit_entry(request):
+def create_unit_entry(request):
     if request.method == "POST":
-        pogonage_unit_instance = get_object_or_404(PogonageUnit, pk=request.POST.get('id'))
-        form = Pogonage(request.POST, instance=pogonage_unit_instance)
-        if form.is_valid():
-            form.save()
+        model, _ = crud_unit_mapper(unit_type=request.POST.get('item_type'))
+        model.objects.create()
     return HttpResponseRedirect(request.META.get('HTTP_REFERER', '<default_url>'))
 
 
-def delete_pogonage_unit_entry(request):
+def update_unit_entry(request):
     if request.method == "POST":
-        PogonageUnit.objects.get(id=request.POST['item_id']).delete()
+        model, form = crud_unit_mapper(unit_type=request.POST.get('type'))
+        pogonage_unit_instance = get_object_or_404(model, pk=request.POST.get('id'))
+        form_data = form(request.POST, instance=pogonage_unit_instance)
+        if form_data.is_valid():
+            form_data.save()
     return HttpResponseRedirect(request.META.get('HTTP_REFERER', '<default_url>'))
 
 
-def create_pogonage_unit_entry(request):
+def delete_unit_entry(request):
     if request.method == "POST":
-        PogonageUnit.objects.create(unit_name='Наименование', metal_thickness=1, unit_length=6000, unit_weight=0,
-                                    unit_cost=0)
+        model, _ = crud_unit_mapper(unit_type=request.POST.get('item_type'))
+        model.objects.get(id=request.POST['item_id']).delete()
     return HttpResponseRedirect(request.META.get('HTTP_REFERER', '<default_url>'))
