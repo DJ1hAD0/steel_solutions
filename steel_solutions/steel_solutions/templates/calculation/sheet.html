@@ -1,16 +1,72 @@
 {% extends 'calculation/base.html' %}
 {% block content %}
+
 <div class="container-fluid text-start my-2 border">
-<form method="post">
-{% csrf_token %}
-  {% for field in form %}
-  <div class="mb-3">
-   {{ field.label_tag }}
-   {{ field }}
-  </div>
-  {% endfor %}
-  <button type="submit" class="btn btn-primary">Сохранить</button>
-</form>
+    {% for item in forms %}
+    <form method="post" action="{% url 'update_unit_entry' %}" id="form-{{ item.id }}">
+        {% csrf_token %}
+
+        <div class="mb-3">
+            {{ item.form }}
+            <input type="hidden" name="id" value="{{ item.id }}">
+            <input type="hidden" name="type" value="{{ item.type }}">
+            <button type="submit" class="btn btn-primary"><i class="fa fa-save"></i></button>
+            <button type="button" id="delete-{{ item.id }}" class="btn btn-primary"><i class="fa fa-trash-o fa-fw"></i></button>
+            <button type="button" class="create btn btn-primary"><i class="fa fa-plus" aria-hidden="true"></i></button>
+        </div>
+        <script>
+            $('#form-{{ item.id }}').on('submit',function(event){
+            event.preventDefault();
+            let data = $(this).serializeArray();
+
+         $.post($(this).attr('action'),data);
+        });
+
+
+    $('#delete-{{ item.id }}').click(function(){
+        // Отправляем AJAX-запрос на сервер
+        $.ajax({
+            url: '{% url 'delete_unit_entry' %}',  // Замените 'your-url-name' на имя вашего URL-шаблона
+            type: 'POST',
+            data: {
+                item_id: '{{ item.id }}',
+                item_type: '{{ item.type }}',
+                csrfmiddlewaretoken: '{{ csrf_token }}',
+            },
+            success: function(data){
+            location.reload();
+                // Обработка успешного ответа от сервера
+                console.log('Успешное сохранение');
+            }
+        });
+        });
+        $('.create').click(function(){
+        // Отправляем AJAX-запрос на сервер
+        $.ajax({
+            url: '{% url 'create_unit_entry' %}',  // Замените 'your-url-name' на имя вашего URL-шаблона
+            type: 'POST',
+            data: {
+                item_id: '{{ item.id }}',
+                item_type: '{{ item.type }}',
+                csrfmiddlewaretoken: '{{ csrf_token }}',
+            },
+            success: function(data){
+            location.reload();
+                // Обработка успешного ответа от сервера
+                console.log('Успешное сохранение');
+            }
+        });
+        });
+        </script>
+    </form>
+    {% endfor %}
 </div>
+
+{% if not forms %}
+<button class="create btn btn-primary" name="sheet" type="button">
+    <i class="fa fa-plus" aria-hidden="true"></i>
+    Добавить листовую единицу
+</button>
+{% endif %}
 {% endblock %}
 

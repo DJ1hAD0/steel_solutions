@@ -28,7 +28,7 @@ def pogonage_sortament(request):
 
 def sheet_sortament(request):
     context = show_unit_sortament(model=SheetUnit, form=Sheet, type='sheet')
-    return render(request, "calculation/pogonage.html", context)
+    return render(request, "calculation/sheet.html", context)
 
 
 def spec(request, product_id):
@@ -109,8 +109,8 @@ def create_unit_entry(request):
 def update_unit_entry(request):
     if request.method == "POST":
         model, form = crud_unit_mapper(unit_type=request.POST.get('type'))
-        pogonage_unit_instance = get_object_or_404(model, pk=request.POST.get('id'))
-        form_data = form(request.POST, instance=pogonage_unit_instance)
+        unit_instance = get_object_or_404(model, pk=request.POST.get('id'))
+        form_data = form(request.POST, instance=unit_instance)
         if form_data.is_valid():
             form_data.save()
     return HttpResponseRedirect(request.META.get('HTTP_REFERER', '<default_url>'))
