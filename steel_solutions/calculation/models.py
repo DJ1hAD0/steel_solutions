@@ -3,19 +3,11 @@ from django.db import models
 
 class Product(models.Model):
     id = models.AutoField(primary_key=True)
-    name = models.CharField(max_length=40)
+    image = models.ImageField(upload_to='products/')
+    name = models.CharField(max_length=40, default='test')
     description = models.CharField(max_length=500, default='tst')
     price = models.IntegerField(default=0)
-
-
-class Photo(models.Model):
-    product = models.ForeignKey(Product, on_delete=models.CASCADE)
-    image = models.ImageField(upload_to='./media/photos')
-
-
-class File(models.Model):
-    product = models.ForeignKey(Product, on_delete=models.CASCADE)
-    file = models.FileField(upload_to='./media/files')
+    objects = models.Manager()
 
 
 class PogonageUnit(models.Model):

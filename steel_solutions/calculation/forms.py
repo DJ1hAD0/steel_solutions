@@ -1,5 +1,5 @@
 from django import forms
-from .models import PogonageUnit, SheetUnit, SheetSpec, PogonageSpec
+from .models import PogonageUnit, SheetUnit, SheetSpec, PogonageSpec, Product
 
 
 class Pogonage(forms.ModelForm):
@@ -41,4 +41,10 @@ class PogonSpecForm(forms.ModelForm):
         model = PogonageSpec
         fields = '__all__'
         exclude = ['spec']
+
+
+class ProductForm(forms.ModelForm):
+    class Meta:
+        model = Product
+        fields = '__all__'
 

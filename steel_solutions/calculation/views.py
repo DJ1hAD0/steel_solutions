@@ -1,14 +1,78 @@
-from django.core.exceptions import ObjectDoesNotExist
+import decimal
+
+from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponseRedirect
 from pyexpat.errors import messages
 from django.db import models
-from .forms import Pogonage, Sheet, SheetSpecForm, PogonSpecForm
+from .forms import Pogonage, Sheet, SheetSpecForm, PogonSpecForm, ProductForm
 from .models import Specification, Product, SheetSpec, PogonageSpec, SheetUnit, PogonageUnit
 
 
 def index(request):
-    return render(request, '<h1>Hello</h1>')
+    return render(request, "calculation/index.html")
+
+
+def get_spec(product_id):
+    spec_id = Specification.objects.get(product_id=product_id).id
+    sheet_spec = SheetSpec.objects.filter(spec_id=spec_id)
+    pogonage_spec = PogonageSpec.objects.filter(spec_id=spec_id)
+    result_sheet = []
+    result_pogon = []
+    summary_weight = 0
+    summary_cost = 0
+    for item_sheet in sheet_spec:
+        sheet_unit_type = SheetUnit.objects.get(id=item_sheet.unit_type_id)
+        calc_sheet = calculate_sheet_spec_entry(sheet_unit_type, item_sheet.width_sheet, item_sheet.height_sheet,
+                                                item_sheet.amount)
+        summary_weight += calc_sheet['weight']
+        summary_cost += calc_sheet['cost']
+        form_sheet_metall = SheetSpecForm(initial={
+            'unit_type': sheet_unit_type.pk,
+            'width_sheet': item_sheet.width_sheet,
+            'height_sheet': item_sheet.height_sheet,
+            'amount': item_sheet.amount})
+        result_sheet.append({'id': item_sheet.id, 'form': form_sheet_metall, 'type': 'sheet', 'calc': calc_sheet})
+    for item_pogon in pogonage_spec:
+        pogon_unit_type = PogonageUnit.objects.get(id=item_pogon.unit_type_id)
+        calc_pogon = calculate_pogon_spec_entry(pogon_unit_type, item_pogon.detail_length, item_pogon.amount)
+        summary_weight += calc_pogon['weight']
+        summary_cost += calc_pogon['cost']
+        form_pogon_metall = PogonSpecForm(initial={
+            'unit_type': pogon_unit_type.pk,
+            'detail_length': item_pogon.detail_length,
+            'amount': item_pogon.amount})
+        result_pogon.append({'id': item_pogon.id, 'form': form_pogon_metall, 'type': 'pogon', 'calc': calc_pogon})
+    return {'spec_sheet': result_sheet, 'spec_pogon': result_pogon, 'spec_id': spec_id, 'sum_weight': summary_weight, 'sum_cost': summary_cost}
+
+
+def calculate_sheet_spec_entry(unit_type, width_detail, height_detail, amount):
+    unit_num = round(
+        decimal.Decimal((width_detail * height_detail) / (unit_type.unit_width * unit_type.unit_height)) * amount, 4)
+    summary_weight = round(
+        decimal.Decimal((width_detail / 1000 * height_detail / 1000)) * amount * unit_type.unit_weight, 1)
+    summary_cost = round(unit_num * unit_type.unit_cost)
+    return {'num': unit_num, 'weight': summary_weight, 'cost': summary_cost}
+
+
+def calculate_pogon_spec_entry(unit_type, length_detail, amount):
+    unit_num = round(decimal.Decimal(length_detail / unit_type.unit_length) * amount, 4)
+    summary_weight = round(decimal.Decimal(length_detail / 1000) * amount * unit_type.unit_weight, 1)
+    summary_cost = round(unit_num * unit_type.unit_cost)
+    return {'num': unit_num, 'weight': summary_weight, 'cost': summary_cost}
+
+
+def product(request, product_id):
+    if request.method == "POST":
+        form = ProductForm(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
+    obj = get_object_or_404(Product, pk=product_id)
+    form = ProductForm(initial=obj.__dict__)
+    img = obj.image
+    product_description = {'form_product': form, 'img_product': img}
+    product_spec = get_spec(product_id)
+    return render(request, "calculation/product.html", context={**product_description, **product_spec})
 
 
 def show_unit_sortament(model, form, type):
@@ -29,29 +93,6 @@ def pogonage_sortament(request):
 def sheet_sortament(request):
     context = show_unit_sortament(model=SheetUnit, form=Sheet, type='sheet')
     return render(request, "calculation/sheet.html", context)
-
-
-def spec(request, product_id):
-    spec_id = Specification.objects.get(pk=product_id).id
-    sheet_spec = SheetSpec.objects.filter(spec_id=spec_id)
-    pogonage_spec = PogonageSpec.objects.filter(spec_id=spec_id)
-    result_sheet = []
-    result_pogon = []
-    for item_sheet in sheet_spec:
-        form_sheet_metall = SheetSpecForm(initial={
-            'unit_type': SheetUnit.objects.get(id=item_sheet.unit_type_id).pk,
-            'width_sheet': item_sheet.width_sheet,
-            'height_sheet': item_sheet.height_sheet,
-            'amount': item_sheet.amount})
-        result_sheet.append({'id': item_sheet.id, 'form': form_sheet_metall, 'type': 'sheet'})
-    for item_pogon in pogonage_spec:
-        form_pogon_metall = PogonSpecForm(initial={
-            'unit_type': PogonageUnit.objects.get(id=item_pogon.unit_type_id).pk,
-            'detail_length': item_pogon.detail_length,
-            'amount': item_pogon.amount})
-        result_pogon.append({'id': item_pogon.id, 'form': form_pogon_metall, 'type': 'pogon'})
-    return render(request, "calculation/spec.html",
-                  context={'spec_sheet': result_sheet, 'spec_pogon': result_pogon, 'spec_id': spec_id})
 
 
 def crud_unit_mapper(unit_type):

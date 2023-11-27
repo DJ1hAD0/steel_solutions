@@ -63,10 +63,14 @@
 </div>
 
 {% if not forms %}
-<button class="create btn btn-primary" name="sheet" type="button">
-    <i class="fa fa-plus" aria-hidden="true"></i>
-    Добавить листовую единицу
-</button>
+<form method="POST" action="{% url 'create_unit_entry' %}">
+    {% csrf_token %}
+    <input type="hidden" name="item_type" value="sheet">
+    <button class="btn btn-primary" type="submit">
+        <i class="fa fa-plus" aria-hidden="true"></i>
+        Добавить листовую единицу
+    </button>
+</form>
 {% endif %}
 {% endblock %}
 
