@@ -18,7 +18,7 @@
             <button type="submit" id="save-{{ item.id }}" class="btn btn-primary"><i class="fa fa-save"></i></button>
             <button type="button" id="delete-{{ item.id }}" class="btn btn-primary"><i class="fa fa-trash-o fa-fw"></i></button>
             <button type="button" id="create-{{ item.id }}" class="btn btn-primary"><i class="fa fa-plus" aria-hidden="true"></i></button>
-            {{ item.calc }}
+            <p>Кол-во единиц: {{ item.calc.num }}шт., вес позиции: {{ item.calc.weight }}кг., цена: {{ item.calc.cost }}руб.</p>
 
 
         </div>
@@ -86,7 +86,7 @@
             <button type="button" id="create-p{{ item.id }}" class="btn btn-primary"><i class="fa fa-plus"
                                                                                         aria-hidden="true"></i></button>
 
-
+            <p>Кол-во единиц: {{ item.calc.num }}шт., вес позиции: {{ item.calc.weight }}кг., цена: {{ item.calc.cost }}руб.</p>
         </div>
         <script>
         $('#form-{{ item.id }}').on('submit',function(event){
