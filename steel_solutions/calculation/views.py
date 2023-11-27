@@ -43,7 +43,8 @@ def get_spec(product_id):
             'detail_length': item_pogon.detail_length,
             'amount': item_pogon.amount})
         result_pogon.append({'id': item_pogon.id, 'form': form_pogon_metall, 'type': 'pogon', 'calc': calc_pogon})
-    return {'spec_sheet': result_sheet, 'spec_pogon': result_pogon, 'spec_id': spec_id, 'sum_weight': summary_weight, 'sum_cost': summary_cost}
+    return {'spec_sheet': result_sheet, 'spec_pogon': result_pogon, 'spec_id': spec_id, 'sum_weight': summary_weight,
+            'sum_cost': summary_cost}
 
 
 def calculate_sheet_spec_entry(unit_type, width_detail, height_detail, amount):
@@ -63,14 +64,15 @@ def calculate_pogon_spec_entry(unit_type, length_detail, amount):
 
 
 def product(request, product_id):
+    obj = get_object_or_404(Product, pk=product_id)
     if request.method == "POST":
-        form = ProductForm(request.POST, request.FILES)
+        form = ProductForm(request.POST, request.FILES, instance=obj)
         if form.is_valid():
             form.save()
-    obj = get_object_or_404(Product, pk=product_id)
+            redirect('product', product_id)
     form = ProductForm(initial=obj.__dict__)
     img = obj.image
-    product_description = {'form_product': form, 'img_product': img}
+    product_description = {'id': obj.id, 'form_product': form, 'img_product': img}
     product_spec = get_spec(product_id)
     return render(request, "calculation/product.html", context={**product_description, **product_spec})
 
@@ -162,3 +164,20 @@ def delete_unit_entry(request):
         model, _ = crud_unit_mapper(unit_type=request.POST.get('item_type'))
         model.objects.get(id=request.POST['item_id']).delete()
     return HttpResponseRedirect(request.META.get('HTTP_REFERER', '<default_url>'))
+
+
+def list_products(request):
+    products = Product.objects.all()
+    to_template = [product for product in products]
+    return render(request, "calculation/products.html", context={'product_list': to_template})
+
+
+def create_product(request):
+    product_id = Product.objects.create().id
+    Specification.objects.create(product_id=product_id)
+    return redirect('product', product_id)
+
+
+def delete_product(request, product_id):
+    Product.objects.get(pk=product_id).delete()
+    return redirect('list_products')

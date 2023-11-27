@@ -1,9 +1,12 @@
 {% extends 'calculation/base.html' %}
 {% block content %}
-<form method="post" enctype="multipart/form-data">
+<form method="post" id="product-card" action="{% url 'product' id %}" enctype="multipart/form-data">
+    {% if img_product %}
     <img src="{{ img_product.url }}">
+    {% endif %}
     {% csrf_token %}
     {{ form_product }}
+    <button type="submit" class="btn btn-primary">Сохранить</button>
 </form>
 
 <div class="container-fluid text-start my-2 border">

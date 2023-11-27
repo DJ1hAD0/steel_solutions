@@ -1,0 +1,23 @@
+{% extends 'calculation/base.html' %}
+{% block content %}
+
+<div class="mb-3">
+    <table class="table my-4 table-primary" >
+        <tbody>
+        {% for item in product_list %}
+        <tr> {% if item.image %}
+            <td valign="middle"><img src="{{ item.image.url }}" width="100px"></td>
+            {% endif %}
+            <td valign="middle">{{ item.name }}</td>
+            <td valign="middle">{{ item.description }}</td>
+            <td valign="middle">{{ item.price }}</td>
+            <td valign="middle"><a href="{% url 'product' item.id %}" class="btn btn-primary" role="button">Редактировать</a>
+            <td valign="middle"><a href="{% url 'delete_product' item.id %}" class="btn btn-primary" role="button">Удалить</a>
+            </td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% endblock %}

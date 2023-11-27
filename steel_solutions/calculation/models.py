@@ -3,11 +3,14 @@ from django.db import models
 
 class Product(models.Model):
     id = models.AutoField(primary_key=True)
-    image = models.ImageField(upload_to='products/')
+    image = models.ImageField(upload_to='products/', default=None)
     name = models.CharField(max_length=40, default='test')
     description = models.CharField(max_length=500, default='tst')
     price = models.IntegerField(default=0)
     objects = models.Manager()
+
+    def __str__(self):
+        return self.name
 
 
 class PogonageUnit(models.Model):
