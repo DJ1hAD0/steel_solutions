@@ -34,6 +34,11 @@ class SheetSpecForm(forms.ModelForm):
         model = SheetSpec
         fields = '__all__'
         exclude = ['spec']
+        labels = {'unit_type': 'Тип',
+                  'width_sheet': 'Ширина',
+                  'height_sheet': 'Высота',
+                  'amount': 'Кол-во'}
+        widgets = {'unit_type': forms.Select(attrs={'class': 'form-control'})}
 
 
 class PogonSpecForm(forms.ModelForm):
@@ -41,24 +46,19 @@ class PogonSpecForm(forms.ModelForm):
         model = PogonageSpec
         fields = '__all__'
         exclude = ['spec']
+        labels = {'unit_type': 'Тип',
+                  'detail_length': 'Длина',
+                  'amount': 'Кол-во'}
 
 
 class ProductForm(forms.ModelForm):
     class Meta:
         model = Product
         fields = '__all__'
-        labels = {'image': 'Изображение',
-                  'name': 'Наименование',
+        labels = {'name': 'Наименование',
                   'description': 'Описание',
                   'price': 'Цена'}
         widgets = {'name': forms.TextInput(attrs={'id': 'product-name', 'class': 'form-control'}),
                    'description': forms.Textarea(attrs={'id': 'product-description', 'class': 'form-control'}),
                    'price': forms.TextInput(attrs={'id': 'product-price', 'class': 'form-control'}),
                    }
-
-# id = models.AutoField(primary_key=True)
-#    image = models.ImageField(upload_to='products/', default=None)
-#    name = models.CharField(max_length=40, default='test')
-#    description = models.CharField(max_length=500, default='tst')
-#    price = models.IntegerField(default=0)
-#    objects = models.Manager()

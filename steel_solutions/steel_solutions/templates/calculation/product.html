@@ -19,7 +19,7 @@
                 <label for="product-price" class="form-label">Цена</label>
                 {{ form_product.price }}
             </div>
-                    {{ form_product.image }}
+            {{ form_product.image }}
             <button type="submit" class="btn btn-primary">Сохранить</button>
         </form>
     </div>
@@ -31,7 +31,13 @@
     <form method="post" action="{% url 'update_spec_entry' %}" id="form-{{ item.id }}">
         <div class="mb-3">
             {% csrf_token %}
-            {{ item.form}}
+            <div class="row form-group">
+                {% for control in item.form %}
+                <div class="col-lg-2"> {{ control }} </div>
+            {% endfor %}
+
+            <div class="col-lg-2">
+
             <input type="hidden" name="id" value="{{ item.id }}">
             <input type="hidden" name="type" value="{{ item.type }}">
             <input type="hidden" name="spec_id" value="{{ item.spec_id }}">
@@ -40,11 +46,11 @@
             </button>
             <button type="button" id="create-{{ item.id }}" class="btn btn-primary"><i class="fa fa-plus"
                                                                                        aria-hidden="true"></i></button>
-            <p>Кол-во единиц: {{ item.calc.num }}шт., вес позиции: {{ item.calc.weight }}кг., цена: {{ item.calc.cost
-                }}руб.</p>
+</div>
+            <p>Кол-во единиц: {{ item.calc.num }}шт., вес позиции: {{ item.calc.weight }}кг., цена: {{ item.calc.cost }}руб.</p>
+            </div>
+</div>
 
-
-        </div>
         <script>
 
             $('#form-{{ item.id }}').on('submit',function(event){
@@ -109,8 +115,7 @@
             <button type="button" id="create-p{{ item.id }}" class="btn btn-primary"><i class="fa fa-plus"
                                                                                         aria-hidden="true"></i></button>
 
-            <p>Кол-во единиц: {{ item.calc.num }}шт., вес позиции: {{ item.calc.weight }}кг., цена: {{ item.calc.cost
-                }}руб.</p>
+            <p>Кол-во единиц: {{ item.calc.num }}шт., вес позиции: {{ item.calc.weight }}кг., цена: {{ item.calc.cost }}руб.</p>
         </div>
         <script>
             $('#form-{{ item.id }}').on('submit',function(event){
