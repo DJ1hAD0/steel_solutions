@@ -47,4 +47,18 @@ class ProductForm(forms.ModelForm):
     class Meta:
         model = Product
         fields = '__all__'
+        labels = {'image': 'Изображение',
+                  'name': 'Наименование',
+                  'description': 'Описание',
+                  'price': 'Цена'}
+        widgets = {'name': forms.TextInput(attrs={'id': 'product-name', 'class': 'form-control'}),
+                   'description': forms.Textarea(attrs={'id': 'product-description', 'class': 'form-control'}),
+                   'price': forms.TextInput(attrs={'id': 'product-price', 'class': 'form-control'}),
+                   }
 
+# id = models.AutoField(primary_key=True)
+#    image = models.ImageField(upload_to='products/', default=None)
+#    name = models.CharField(max_length=40, default='test')
+#    description = models.CharField(max_length=500, default='tst')
+#    price = models.IntegerField(default=0)
+#    objects = models.Manager()
