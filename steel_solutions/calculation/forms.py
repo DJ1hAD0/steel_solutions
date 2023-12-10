@@ -6,13 +6,12 @@ class Pogonage(forms.ModelForm):
     class Meta:
         model = PogonageUnit
         fields = '__all__'
-        labels = {
-            'unit_name': 'Наименование',
-            'metal_thickness': 'Толщина стенки, мм.',
-            'unit_length': 'Длина хлыста, мм.',
-            'unit_weight': 'Вес одного хлыста, кг.',
-            'unit_cost': 'Стоимость одной единицы, руб.',
-        }
+        widgets = {'unit_name': forms.TextInput(attrs={'id': 'unit-name', 'class': 'form-control'}),
+                   'metal_thickness': forms.NumberInput(attrs={'id': 'metal-thickness', 'class': 'form-control'}),
+                   'unit_length': forms.NumberInput(attrs={'id': 'unit-length', 'class': 'form-control'}),
+                   'unit_weight': forms.NumberInput(attrs={'id': 'unit-weight', 'class': 'form-control'}),
+                   'unit_cost': forms.NumberInput(attrs={'id': 'unit-cost', 'class': 'form-control'})
+                   }
 
 
 class Sheet(forms.ModelForm):
@@ -24,9 +23,16 @@ class Sheet(forms.ModelForm):
             'metal_thickness': 'Толщина листа, мм.',
             'unit_width': 'Ширина листа, мм.',
             'unit_height': 'Длина листа, мм.',
-            'unit_weight': 'Вес листа, кг.',
+            'unit_weight': 'Вес м2, кг.',
             'unit_cost': 'Стоимость листа, руб.'
         }
+        widgets = {'unit_name': forms.TextInput(attrs={'id': 'unit-name', 'class': 'form-control'}),
+                   'metal_thickness': forms.NumberInput(attrs={'id': 'metal-thickness', 'class': 'form-control'}),
+                   'unit_width': forms.NumberInput(attrs={'id': 'unit-width', 'class': 'form-control'}),
+                   'unit_height': forms.NumberInput(attrs={'id': 'unit-height', 'class': 'form-control'}),
+                   'unit_weight': forms.NumberInput(attrs={'id': 'unit-weight', 'class': 'form-control'}),
+                   'unit_cost': forms.NumberInput(attrs={'id': 'unit-cost', 'class': 'form-control'})
+                   }
 
 
 class SheetSpecForm(forms.ModelForm):
@@ -34,10 +40,6 @@ class SheetSpecForm(forms.ModelForm):
         model = SheetSpec
         fields = '__all__'
         exclude = ['spec']
-        labels = {'unit_type': 'Тип',
-                  'width_sheet': 'Ширина',
-                  'height_sheet': 'Высота',
-                  'amount': 'Кол-во'}
         widgets = {'unit_type': forms.Select(attrs={'id': 'unit-type', 'class': 'form-select'}),
                    'width_sheet': forms.TextInput(attrs={'id': 'width-sheet', 'class': 'form-control'}),
                    'height_sheet': forms.TextInput(attrs={'id': 'height-sheet', 'class': 'form-control'}),
@@ -50,9 +52,6 @@ class PogonSpecForm(forms.ModelForm):
         model = PogonageSpec
         fields = '__all__'
         exclude = ['spec']
-        labels = {'unit_type': 'Тип',
-                  'detail_length': 'Длина',
-                  'amount': 'Кол-во'}
         widgets = {'unit_type': forms.Select(attrs={'id': 'unit-type', 'class': 'form-select'}),
                    'detail_length': forms.TextInput(attrs={'id': 'detail-length', 'class': 'form-control'}),
                    'amount': forms.TextInput(attrs={'id': 'amount', 'class': 'form-control'}),

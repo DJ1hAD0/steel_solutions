@@ -34,15 +34,15 @@
             <div class="row form-group my-2">
 
                 <div class="col-lg-2">
-                    <label for="unit-type" class="form-label my-1">Тип</label>
+                    <label for="unit-type" class="form-label my-1">Марка листа</label>
                     {{ item.form.unit_type }}
                 </div>
                 <div class="col-lg-2">
-                    <label for="width-sheet" class="form-label my-1">Ширина</label>
+                    <label for="width-sheet" class="form-label my-1">Ширина листа</label>
                     {{ item.form.width_sheet }}
                 </div>
                 <div class="col-lg-2">
-                    <label for="height-sheet" class="form-label my-1">Длина</label>
+                    <label for="height-sheet" class="form-label my-1">Длина листа</label>
                     {{ item.form.height_sheet }}
                 </div>
                 <div class="col-lg-2">
@@ -52,7 +52,7 @@
 
 
 
-            <div class="col-lg-2">
+            <div class="col-lg-2 pt-4 mt-2">
 
             <input type="hidden" name="id" value="{{ item.id }}">
             <input type="hidden" name="type" value="{{ item.type }}">
@@ -120,13 +120,22 @@
     <form method="post" action="{% url 'update_spec_entry' %}" id="form-{{ item.id }}">
         {% csrf_token %}
 
-        <div class="mb-3">
+        <div class="mb-1">
             <div class="row form-group">
-                {% for control in item.form %}
-                <div class="col-lg-2"> {{ control }} </div>
-            {% endfor %}
+             <div class="col-lg-2">
+                    <label for="unit-type" class="form-label my-1">Погонаж</label>
+                    {{ item.form.unit_type }}
+                </div>
+                <div class="col-lg-2">
+                    <label for="detail-length" class="form-label my-1">Длина</label>
+                    {{ item.form.detail_length }}
+                </div>
+                <div class="col-lg-2">
+                    <label for="amount" class="form-label my-1">Кол-во</label>
+                    {{ item.form.amount }}
+                </div>
 
-            <div class="col-lg-2">
+            <div class="col-lg-2 pt-4 mt-2">
 
             <input type="hidden" name="id" value="{{ item.id }}">
             <input type="hidden" name="type" value="{{ item.type }}">

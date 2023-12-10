@@ -7,13 +7,40 @@
         {% csrf_token %}
 
         <div class="mb-3">
-            {{ item.form }}
+            <div class="row form-group my-2">
+
+                <div class="col-lg-2">
+                    <label for="unit-name" class="form-label my-1">Марка</label>
+                    {{ item.form.unit_name }}
+                </div>
+                <div class="col-lg-2">
+                    <label for="metal-thickness" class="form-label my-1">Толщина стенки, мм.</label>
+                    {{ item.form.metal_thickness }}
+                </div>
+                <div class="col-lg-2">
+                    <label for="unit-height" class="form-label my-1">Длина листа, мм.</label>
+                    {{ item.form.unit_height }}
+                </div>
+                <div class="col-lg-2">
+                    <label for="unit-width" class="form-label my-1">Ширина листа, мм.</label>
+                    {{ item.form.unit_width }}
+                </div>
+                <div class="col-lg-2">
+                    <label for="unit-weight" class="form-label my-1">Вес м2, кг.</label>
+                    {{ item.form.unit_weight }}
+                </div>
+                <div class="col-lg-2">
+                    <label for="unit-cost" class="form-label my-1">Стоимость, руб.</label>
+                    {{ item.form.unit_cost }}
+                </div>
+            <div class="col-lg-2 pt-4 mt-2">
             <input type="hidden" name="id" value="{{ item.id }}">
             <input type="hidden" name="type" value="{{ item.type }}">
             <button type="submit" class="btn btn-primary"><i class="fa fa-save"></i></button>
             <button type="button" id="delete-{{ item.id }}" class="btn btn-primary"><i class="fa fa-trash-o fa-fw"></i></button>
             <button type="button" class="create btn btn-primary"><i class="fa fa-plus" aria-hidden="true"></i></button>
         </div>
+            </div>
         <script>
             $('#form-{{ item.id }}').on('submit',function(event){
             event.preventDefault();
