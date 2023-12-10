@@ -31,10 +31,26 @@
     <form method="post" action="{% url 'update_spec_entry' %}" id="form-{{ item.id }}">
         <div class="mb-3">
             {% csrf_token %}
-            <div class="row form-group">
-                {% for control in item.form %}
-                <div class="col-lg-2"> {{ control }} </div>
-            {% endfor %}
+            <div class="row form-group my-2">
+
+                <div class="col-lg-2">
+                    <label for="unit-type" class="form-label my-1">Тип</label>
+                    {{ item.form.unit_type }}
+                </div>
+                <div class="col-lg-2">
+                    <label for="width-sheet" class="form-label my-1">Ширина</label>
+                    {{ item.form.width_sheet }}
+                </div>
+                <div class="col-lg-2">
+                    <label for="height-sheet" class="form-label my-1">Длина</label>
+                    {{ item.form.height_sheet }}
+                </div>
+                <div class="col-lg-2">
+                    <label for="amount" class="form-label my-1">Кол-во</label>
+                    {{ item.form.amount }}
+                </div>
+
+
 
             <div class="col-lg-2">
 
@@ -103,8 +119,15 @@
     {% for item in spec_pogon %}
     <form method="post" action="{% url 'update_spec_entry' %}" id="form-{{ item.id }}">
         {% csrf_token %}
+
         <div class="mb-3">
-            {{ item.form }}
+            <div class="row form-group">
+                {% for control in item.form %}
+                <div class="col-lg-2"> {{ control }} </div>
+            {% endfor %}
+
+            <div class="col-lg-2">
+
             <input type="hidden" name="id" value="{{ item.id }}">
             <input type="hidden" name="type" value="{{ item.type }}">
             <input type="hidden" name="spec_id" value="{{ item.spec_id }}">
@@ -114,6 +137,7 @@
             </button>
             <button type="button" id="create-p{{ item.id }}" class="btn btn-primary"><i class="fa fa-plus"
                                                                                         aria-hidden="true"></i></button>
+            </div>
 
             <p>Кол-во единиц: {{ item.calc.num }}шт., вес позиции: {{ item.calc.weight }}кг., цена: {{ item.calc.cost }}руб.</p>
         </div>

@@ -38,7 +38,11 @@ class SheetSpecForm(forms.ModelForm):
                   'width_sheet': 'Ширина',
                   'height_sheet': 'Высота',
                   'amount': 'Кол-во'}
-        widgets = {'unit_type': forms.Select(attrs={'class': 'form-control'})}
+        widgets = {'unit_type': forms.Select(attrs={'id': 'unit-type', 'class': 'form-select'}),
+                   'width_sheet': forms.TextInput(attrs={'id': 'width-sheet', 'class': 'form-control'}),
+                   'height_sheet': forms.TextInput(attrs={'id': 'height-sheet', 'class': 'form-control'}),
+                   'amount': forms.TextInput(attrs={'id': 'amount', 'class': 'form-control'}),
+                   }
 
 
 class PogonSpecForm(forms.ModelForm):
@@ -49,6 +53,10 @@ class PogonSpecForm(forms.ModelForm):
         labels = {'unit_type': 'Тип',
                   'detail_length': 'Длина',
                   'amount': 'Кол-во'}
+        widgets = {'unit_type': forms.Select(attrs={'id': 'unit-type', 'class': 'form-select'}),
+                   'detail_length': forms.TextInput(attrs={'id': 'detail-length', 'class': 'form-control'}),
+                   'amount': forms.TextInput(attrs={'id': 'amount', 'class': 'form-control'}),
+                   }
 
 
 class ProductForm(forms.ModelForm):
