@@ -1,19 +1,17 @@
-import decimal
-
-from django.core.exceptions import ObjectDoesNotExist, ValidationError
+from urllib.request import Request
+from typing import Union
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponseRedirect
-from pyexpat.errors import messages
-from django.db import models
 from .forms import Pogonage, Sheet, SheetSpecForm, PogonSpecForm, ProductForm
 from .models import Specification, Product, SheetSpec, PogonageSpec, SheetUnit, PogonageUnit
+from .utils.compute import calculate_pogon_spec_entry, calculate_sheet_spec_entry
 
 
-def index(request):
+def index(request: Request) -> render:
     return render(request, "calculation/index.html")
 
 
-def get_spec(product_id):
+def get_spec(product_id: int) -> dict:
     spec_id = Specification.objects.get(product_id=product_id).id
     sheet_spec = SheetSpec.objects.filter(spec_id=spec_id)
     pogonage_spec = PogonageSpec.objects.filter(spec_id=spec_id)
@@ -47,23 +45,7 @@ def get_spec(product_id):
             'sum_cost': summary_cost}
 
 
-def calculate_sheet_spec_entry(unit_type, width_detail, height_detail, amount):
-    unit_num = round(
-        decimal.Decimal((width_detail * height_detail) / (unit_type.unit_width * unit_type.unit_height)) * amount, 4)
-    weight = round(
-        decimal.Decimal((width_detail / 1000 * height_detail / 1000)) * amount * unit_type.unit_weight, 1)
-    cost = round(unit_num * unit_type.unit_cost)
-    return {'num': unit_num, 'weight': weight, 'cost': cost}
-
-
-def calculate_pogon_spec_entry(unit_type, length_detail, amount):
-    unit_num = round(decimal.Decimal(length_detail / unit_type.unit_length) * amount, 4)
-    weight = round(decimal.Decimal(length_detail / 1000) * amount * unit_type.unit_weight, 1)
-    cost = round(unit_num * unit_type.unit_cost)
-    return {'num': unit_num, 'weight': weight, 'cost': cost}
-
-
-def product(request, product_id):
+def product(request, product_id: int) -> render:
     obj = get_object_or_404(Product, pk=product_id)
     if request.method == "POST":
         form = ProductForm(request.POST, request.FILES, instance=obj)
@@ -77,7 +59,7 @@ def product(request, product_id):
     return render(request, "calculation/product.html", context={**product_description, **product_spec})
 
 
-def show_unit_sortament(model, form, type):
+def show_unit_sortament(model, form, type: str) -> dict:
     unit_types = model.objects.all()
     result = []
     for unit_type in unit_types:
@@ -87,17 +69,17 @@ def show_unit_sortament(model, form, type):
     return context
 
 
-def pogonage_sortament(request):
+def pogonage_sortament(request) -> render:
     context = show_unit_sortament(model=PogonageUnit, form=Pogonage, type='pogon')
     return render(request, "calculation/pogonage.html", context)
 
 
-def sheet_sortament(request):
+def sheet_sortament(request) -> render:
     context = show_unit_sortament(model=SheetUnit, form=Sheet, type='sheet')
     return render(request, "calculation/sheet.html", context)
 
 
-def crud_unit_mapper(unit_type):
+def crud_unit_mapper(unit_type: str) -> (Union[PogonageUnit, SheetUnit], Union[Pogonage, Sheet]):
     models_mapping = {'pogon': PogonageUnit,
                       'sheet': SheetUnit}
     forms_mapping = {'pogon': Pogonage,
@@ -105,7 +87,7 @@ def crud_unit_mapper(unit_type):
     return models_mapping.get(unit_type), forms_mapping.get(unit_type)
 
 
-def crud_spec_mapper(spec_type):
+def crud_spec_mapper(spec_type: str) -> (Union[PogonageSpec, SheetSpec], Union[PogonSpecForm, SheetSpecForm]):
     models_mapping = {'pogon': PogonageSpec,
                       'sheet': SheetSpec}
     forms_mapping = {'pogon': PogonSpecForm,
@@ -113,14 +95,14 @@ def crud_spec_mapper(spec_type):
     return models_mapping.get(spec_type), forms_mapping.get(spec_type)
 
 
-def delete_spec_entry(request):
+def delete_spec_entry(request) -> HttpResponseRedirect:
     if request.method == "POST":
         model, _ = crud_spec_mapper(spec_type=request.POST.get('item_type'))
         model.objects.get(id=request.POST['item_id']).delete()
     return HttpResponseRedirect(request.META.get('HTTP_REFERER', '<default_url>'))
 
 
-def create_spec_entry(request):
+def create_spec_entry(request) -> HttpResponseRedirect:
     if request.method == "POST":
         metal_type = request.POST.get('item_type')
         unit_model, _ = crud_unit_mapper(unit_type=metal_type)
@@ -130,7 +112,7 @@ def create_spec_entry(request):
     return HttpResponseRedirect(request.META.get('HTTP_REFERER', '<default_url>'))
 
 
-def update_spec_entry(request):
+def update_spec_entry(request) -> HttpResponseRedirect:
     if request.method == "POST":
         metal_type = request.POST.get('type')
         unit_model, _ = crud_unit_mapper(unit_type=metal_type)
@@ -142,14 +124,14 @@ def update_spec_entry(request):
     return HttpResponseRedirect(request.META.get('HTTP_REFERER', '<default_url>'))
 
 
-def create_unit_entry(request):
+def create_unit_entry(request) -> HttpResponseRedirect:
     if request.method == "POST":
         model, _ = crud_unit_mapper(unit_type=request.POST.get('item_type'))
         model.objects.create()
     return HttpResponseRedirect(request.META.get('HTTP_REFERER', '<default_url>'))
 
 
-def update_unit_entry(request):
+def update_unit_entry(request) -> HttpResponseRedirect:
     if request.method == "POST":
         model, form = crud_unit_mapper(unit_type=request.POST.get('type'))
         unit_instance = get_object_or_404(model, pk=request.POST.get('id'))
@@ -159,25 +141,25 @@ def update_unit_entry(request):
     return HttpResponseRedirect(request.META.get('HTTP_REFERER', '<default_url>'))
 
 
-def delete_unit_entry(request):
+def delete_unit_entry(request) -> HttpResponseRedirect:
     if request.method == "POST":
         model, _ = crud_unit_mapper(unit_type=request.POST.get('item_type'))
         model.objects.get(id=request.POST['item_id']).delete()
     return HttpResponseRedirect(request.META.get('HTTP_REFERER', '<default_url>'))
 
 
-def list_products(request):
+def list_products(request) -> render:
     products = Product.objects.all()
     to_template = [product for product in products]
     return render(request, "calculation/products.html", context={'product_list': to_template})
 
 
-def create_product(request):
+def create_product(request) -> redirect:
     product_id = Product.objects.create().id
     Specification.objects.create(product_id=product_id)
     return redirect('product', product_id)
 
 
-def delete_product(request, product_id):
+def delete_product(request, product_id: int) -> redirect:
     Product.objects.get(pk=product_id).delete()
     return redirect('list_products')
