@@ -11,12 +11,12 @@ def index(request: Request) -> render:
     return render(request, "calculation/index.html")
 
 
-def get_spec(product_id: int) -> dict:
+def get_specification_by_product_id(product_id: int) -> dict:
     spec_id = Specification.objects.get(product_id=product_id).id
     sheet_spec = SheetSpec.objects.filter(spec_id=spec_id)
     pogonage_spec = PogonageSpec.objects.filter(spec_id=spec_id)
-    result_sheet = []
-    result_pogon = []
+    results_sheet = []
+    results_pogon = []
     summary_weight = 0
     summary_cost = 0
     for item_sheet in sheet_spec:
@@ -30,7 +30,7 @@ def get_spec(product_id: int) -> dict:
             'width_sheet': item_sheet.width_sheet,
             'height_sheet': item_sheet.height_sheet,
             'amount': item_sheet.amount})
-        result_sheet.append({'id': item_sheet.id, 'form': form_sheet_metall, 'type': 'sheet', 'calc': calc_sheet})
+        results_sheet.append({'id': item_sheet.id, 'form': form_sheet_metall, 'type': 'sheet', 'calc': calc_sheet})
     for item_pogon in pogonage_spec:
         pogon_unit_type = PogonageUnit.objects.get(id=item_pogon.unit_type_id)
         calc_pogon = calculate_pogon_spec_entry(pogon_unit_type, item_pogon.detail_length, item_pogon.amount)
@@ -40,12 +40,12 @@ def get_spec(product_id: int) -> dict:
             'unit_type': pogon_unit_type.pk,
             'detail_length': item_pogon.detail_length,
             'amount': item_pogon.amount})
-        result_pogon.append({'id': item_pogon.id, 'form': form_pogon_metall, 'type': 'pogon', 'calc': calc_pogon})
-    return {'spec_sheet': result_sheet, 'spec_pogon': result_pogon, 'spec_id': spec_id, 'sum_weight': summary_weight,
+        results_pogon.append({'id': item_pogon.id, 'form': form_pogon_metall, 'type': 'pogon', 'calc': calc_pogon})
+    return {'spec_sheet': results_sheet, 'spec_pogon': results_pogon, 'spec_id': spec_id, 'sum_weight': summary_weight,
             'sum_cost': summary_cost}
 
 
-def product(request, product_id: int) -> render:
+def get_product_by_id(request, product_id: int) -> render:
     obj = get_object_or_404(Product, pk=product_id)
     if request.method == "POST":
         form = ProductForm(request.POST, request.FILES, instance=obj)
@@ -55,7 +55,7 @@ def product(request, product_id: int) -> render:
     form = ProductForm(initial=obj.__dict__)
     img = obj.image
     product_description = {'id': obj.id, 'form_product': form, 'img_product': img}
-    product_spec = get_spec(product_id)
+    product_spec = get_specification_by_product_id(product_id)
     return render(request, "calculation/product.html", context={**product_description, **product_spec})
 
 
