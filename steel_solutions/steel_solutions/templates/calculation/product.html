@@ -18,6 +18,7 @@
                 {{ form_product.description }}
                 <label for="product-price" class="form-label">Цена</label>
                 {{ form_product.price }}
+                <p>Суммарный вес: {{ sum_weight }}кг., суммарная стоимость: {{ sum_cost }}руб. </p>
             </div>
             {{ form_product.image }}
             <button type="submit" class="btn btn-primary">Сохранить</button>
@@ -197,7 +198,7 @@
 
     </form>
     {% endfor %}
-    <p>Суммарный вес: {{ sum_weight }}кг., суммарная стоимость: {{ sum_cost }}руб. </p>
+
     {% if not spec_sheet %}
     <button class="add-entry btn btn-primary" name="sheet" type="button">
         <i class="fa fa-plus" aria-hidden="true"></i>
